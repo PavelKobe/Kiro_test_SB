@@ -1,0 +1,329 @@
+{% extends "base.html" %}
+
+{% block title %}Инцидент {{ incident.incident_number }} - Система управления{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-8">
+            <!-- Основная информация об инциденте -->
+            <div class="d-flex align-items-center mb-4">
+                <a href="{{ url_for('incidents') }}" class="btn btn-outline-secondary me-3">
+                    <i class="bi bi-arrow-left"></i> Назад к списку
+                </a>
+                <div>
+                    <h2>{{ incident.incident_number }}</h2>
+                    <p class="text-muted mb-0">{{ incident.title }}</p>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="bi bi-info-circle"></i> Детали инцидента
+                    </h5>
+                    <div class="btn-group btn-group-sm">
+                        <button class="btn btn-outline-primary">
+                            <i class="bi bi-pencil"></i> Редактировать
+                        </button>
+                        <button class="btn btn-outline-secondary">
+                            <i class="bi bi-printer"></i> Печать
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Описание</h6>
+                            <p>{{ incident.description }}</p>
+                            
+                            {% if incident.location_details %}
+                            <h6>Дополнительные детали местоположения</h6>
+                            <p>{{ incident.location_details }}</p>
+                            {% endif %}
+                            
+                            {% if incident.resolution_notes %}
+                            <h6>Примечания к решению</h6>
+                            <p>{{ incident.resolution_notes }}</p>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <table class="table table-sm">
+                                <tr>
+                                    <td><strong>Статус:</strong></td>
+                                    <td>
+                                        {% if incident.status == 'new' %}
+                                            <span class="badge bg-primary">Новый</span>
+                                        {% elif incident.status == 'assigned' %}
+                                            <span class="badge bg-warning">Назначен</span>
+                                        {% elif incident.status == 'in_progress' %}
+                                            <span class="badge bg-info">В работе</span>
+                                        {% elif incident.status == 'resolved' %}
+                                            <span class="badge bg-success">Решен</span>
+                                        {% elif incident.status == 'closed' %}
+                                            <span class="badge bg-secondary">Закрыт</span>
+                                        {% else %}
+                                            <span class="badge bg-dark">{{ incident.status }}</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Приоритет:</strong></td>
+                                    <td>
+                                        {% if incident.priority == 'critical' %}
+                                            <span class="badge bg-danger">Критический</span>
+                                        {% elif incident.priority == 'high' %}
+                                            <span class="badge bg-warning">Высокий</span>
+                                        {% elif incident.priority == 'medium' %}
+                                            <span class="badge bg-info">Средний</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">Низкий</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Серьезность:</strong></td>
+                                    <td>
+                                        {% if incident.severity == 'critical' %}
+                                            <span class="badge bg-danger">Критическая</span>
+                                        {% elif incident.severity == 'major' %}
+                                            <span class="badge bg-warning">Значительная</span>
+                                        {% else %}
+                                            <span class="badge bg-info">Незначительная</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Категория:</strong></td>
+                                    <td>
+                                        {% if incident.category %}
+                                            <span class="badge" style="background-color: {{ incident.category.color or '#6c757d' }}">
+                                                {{ incident.category.name }}
+                                            </span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% if incident.subcategory %}
+                                <tr>
+                                    <td><strong>Подкатегория:</strong></td>
+                                    <td>{{ incident.subcategory.name }}</td>
+                                </tr>
+                                {% endif %}
+                                <tr>
+                                    <td><strong>Магазин:</strong></td>
+                                    <td>
+                                        {% if incident.store %}
+                                            {{ incident.store.code }} - {{ incident.store.name }}
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% if incident.department %}
+                                <tr>
+                                    <td><strong>Отдел:</strong></td>
+                                    <td>{{ incident.department.name }}</td>
+                                </tr>
+                                {% endif %}
+                                <tr>
+                                    <td><strong>Клиенты затронуты:</strong></td>
+                                    <td>
+                                        {% if incident.customer_affected %}
+                                            <span class="text-danger">Да</span>
+                                        {% else %}
+                                            <span class="text-success">Нет</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Комментарии -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-chat-dots"></i> Комментарии ({{ comments|length }})
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if comments %}
+                        {% for comment in comments %}
+                        <div class="d-flex mb-3">
+                            <div class="flex-shrink-0">
+                                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" 
+                                     style="width: 40px; height: 40px;">
+                                    {% if comment.user %}
+                                        {{ comment.user.first_name[0] if comment.user.first_name else comment.user.username[0] }}
+                                    {% else %}
+                                        S
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <h6 class="mb-1">
+                                            {% if comment.user %}
+                                                {{ comment.user.full_name }}
+                                            {% else %}
+                                                Система
+                                            {% endif %}
+                                            {% if comment.is_internal %}
+                                                <span class="badge bg-warning ms-2">Внутренний</span>
+                                            {% endif %}
+                                        </h6>
+                                        <small class="text-muted">{{ comment.created_at.strftime('%d.%m.%Y %H:%M') }}</small>
+                                    </div>
+                                </div>
+                                <p class="mb-0 mt-2">{{ comment.comment_text }}</p>
+                            </div>
+                        </div>
+                        {% if not loop.last %}<hr>{% endif %}
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted text-center py-3">Комментариев пока нет</p>
+                    {% endif %}
+                    
+                    <!-- Форма добавления комментария -->
+                    <hr>
+                    <form method="POST" action="#" class="mt-3">
+                        <div class="mb-3">
+                            <label for="comment_text" class="form-label">Добавить комментарий</label>
+                            <textarea class="form-control" id="comment_text" name="comment_text" rows="3" 
+                                      placeholder="Введите ваш комментарий..."></textarea>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="is_internal" name="is_internal">
+                                <label class="form-check-label" for="is_internal">
+                                    Внутренний комментарий
+                                </label>
+                            </div>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-send"></i> Добавить комментарий
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <!-- Боковая панель с дополнительной информацией -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="bi bi-people"></i> Участники
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <strong>Сообщил:</strong><br>
+                        {% if incident.reporter %}
+                            {{ incident.reporter.full_name }}<br>
+                            <small class="text-muted">{{ incident.reporter.position or incident.reporter.role }}</small>
+                        {% else %}
+                            <span class="text-muted">Не указан</span>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <strong>Назначен:</strong><br>
+                        {% if incident.assignee %}
+                            {{ incident.assignee.full_name }}<br>
+                            <small class="text-muted">{{ incident.assignee.position or incident.assignee.role }}</small>
+                        {% else %}
+                            <span class="text-muted">Не назначен</span>
+                        {% endif %}
+                    </div>
+                    
+                    {% if incident.resolver %}
+                    <div class="mb-3">
+                        <strong>Решил:</strong><br>
+                        {{ incident.resolver.full_name }}<br>
+                        <small class="text-muted">{{ incident.resolver.position or incident.resolver.role }}</small>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="bi bi-clock"></i> Временные метки
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-2">
+                        <strong>Создан:</strong><br>
+                        <small>{{ incident.created_at.strftime('%d.%m.%Y %H:%M') }}</small>
+                    </div>
+                    
+                    {% if incident.assigned_at %}
+                    <div class="mb-2">
+                        <strong>Назначен:</strong><br>
+                        <small>{{ incident.assigned_at.strftime('%d.%m.%Y %H:%M') }}</small>
+                    </div>
+                    {% endif %}
+                    
+                    {% if incident.resolved_at %}
+                    <div class="mb-2">
+                        <strong>Решен:</strong><br>
+                        <small>{{ incident.resolved_at.strftime('%d.%m.%Y %H:%M') }}</small>
+                    </div>
+                    {% endif %}
+                    
+                    {% if incident.sla_deadline %}
+                    <div class="mb-2">
+                        <strong>Крайний срок SLA:</strong><br>
+                        <small class="{% if incident.is_overdue %}text-danger{% else %}text-success{% endif %}">
+                            {{ incident.sla_deadline.strftime('%d.%m.%Y %H:%M') }}
+                            {% if incident.is_overdue %}
+                                <i class="bi bi-exclamation-triangle text-danger"></i>
+                            {% endif %}
+                        </small>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="mb-2">
+                        <strong>Возраст инцидента:</strong><br>
+                        <small>{{ "%.1f"|format(incident.age_hours) }} часов</small>
+                    </div>
+                </div>
+            </div>
+
+            {% if history %}
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="bi bi-clock-history"></i> История изменений
+                    </h6>
+                </div>
+                <div class="card-body">
+                    {% for change in history[:5] %}
+                    <div class="mb-2">
+                        <small class="text-muted">{{ change.created_at.strftime('%d.%m %H:%M') }}</small><br>
+                        <strong>{{ change.field_name }}:</strong> 
+                        {% if change.old_value %}{{ change.old_value }} → {% endif %}{{ change.new_value }}<br>
+                        {% if change.change_reason %}
+                            <small class="text-muted">{{ change.change_reason }}</small>
+                        {% endif %}
+                    </div>
+                    {% if not loop.last %}<hr class="my-2">{% endif %}
+                    {% endfor %}
+                    
+                    {% if history|length > 5 %}
+                    <div class="text-center mt-3">
+                        <button class="btn btn-sm btn-outline-secondary">
+                            Показать все изменения ({{ history|length }})
+                        </button>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

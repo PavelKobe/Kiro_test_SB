@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}Контакты - Flask App{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <h2>Свяжитесь с нами</h2>
+        
+        <form method="POST">
+            <div class="mb-3">
+                <label for="name" class="form-label">Имя</label>
+                <input type="text" class="form-control" id="name" name="name" 
+                       value="{{ form.name if form else '' }}" required>
+                {% if form and form.errors.get('name') %}
+                    <div class="text-danger">
+                        <small>{{ form.errors.name }}</small>
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" class="form-control" id="email" name="email" 
+                       value="{{ form.email if form else '' }}" required>
+                {% if form and form.errors.get('email') %}
+                    <div class="text-danger">
+                        <small>{{ form.errors.email }}</small>
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div class="mb-3">
+                <label for="message" class="form-label">Сообщение</label>
+                <textarea class="form-control" id="message" name="message" rows="5" required>{{ form.message if form else '' }}</textarea>
+                {% if form and form.errors.get('message') %}
+                    <div class="text-danger">
+                        <small>{{ form.errors.message }}</small>
+                    </div>
+                {% endif %}
+            </div>
+            
+            <button type="submit" class="btn btn-primary">
+                <i class="bi bi-send"></i> Отправить
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

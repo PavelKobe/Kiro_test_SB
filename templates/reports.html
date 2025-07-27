@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}Отчеты и аналитика - Система управления{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-graph-up-arrow text-success"></i> Отчеты и аналитика</h2>
+        <button class="btn btn-success">
+            <i class="bi bi-download"></i> Экспорт отчета
+        </button>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h4 class="text-info">15</h4>
+                    <p class="mb-0">Отчетов</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h4 class="text-success">98%</h4>
+                    <p class="mb-0">SLA</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h4 class="text-primary">24ч</h4>
+                    <p class="mb-0">Ср. время</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h4 class="text-warning">5</h4>
+                    <p class="mb-0">Просрочено</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">Аналитические отчеты</h5>
+        </div>
+        <div class="card-body">
+            <p class="text-muted">Здесь будут отображаться графики и аналитические данные.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

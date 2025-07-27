@@ -1,0 +1,366 @@
+{% extends "base.html" %}
+
+{% block title %}Создать инцидент - Система управления{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="d-flex align-items-center mb-4">
+                <a href="{{ url_for('incidents') }}" class="btn btn-outline-secondary me-3">
+                    <i class="bi bi-arrow-left"></i> Назад
+                </a>
+                <h2><i class="bi bi-plus-circle text-danger"></i> Создать новый инцидент</h2>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+                    <form method="POST" id="incidentForm">
+                        <div class="row">
+                            <!-- Основная информация -->
+                            <div class="col-md-12">
+                                <h5 class="card-title mb-3">
+                                    <i class="bi bi-info-circle"></i> Основная информация
+                                </h5>
+                            </div>
+
+                            <div class="col-md-12 mb-3">
+                                <label for="title" class="form-label">Заголовок инцидента <span
+                                        class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="title" name="title"
+                                    value="{{ form.title if form else '' }}" placeholder="Краткое описание проблемы"
+                                    maxlength="200" required>
+                                {% if form and form.errors.get('title') %}
+                                <div class="text-danger mt-1">
+                                    <small>{{ form.errors.title }}</small>
+                                </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-12 mb-3">
+                                <label for="description" class="form-label">Подробное описание <span
+                                        class="text-danger">*</span></label>
+                                <textarea class="form-control" id="description" name="description" rows="4"
+                                    placeholder="Детальное описание инцидента, шаги для воспроизведения, влияние на работу"
+                                    required>{{ form.description if form else '' }}</textarea>
+                                {% if form and form.errors.get('description') %}
+                                <div class="text-danger mt-1">
+                                    <small>{{ form.errors.description }}</small>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        <div class="row">
+                            <!-- Классификация -->
+                            <div class="col-md-12">
+                                <h5 class="card-title mb-3">
+                                    <i class="bi bi-tags"></i> Классификация
+                                </h5>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="category_id" class="form-label">Категория <span
+                                        class="text-danger">*</span></label>
+                                <select class="form-select" id="category_id" name="category_id" required>
+                                    <option value="">Выберите категорию</option>
+                                    <option value="1">🔧 Технические проблемы</option>
+                                    <option value="2">🛡️ Безопасность</option>
+                                    <option value="3">👥 Обслуживание клиентов</option>
+                                    <option value="4">👨‍💼 Персонал</option>
+                                    <option value="5">🏢 Помещения</option>
+                                    <option value="6">📦 Товары</option>
+                                    <option value="7">💰 Финансы</option>
+                                    <option value="8">🚚 Доставка</option>
+                                    <option value="9">📢 Маркетинг</option>
+                                    <option value="10">⭐ Качество</option>
+                                    <option value="11">🏭 Поставщики</option>
+                                    <option value="12">💬 Коммуникации</option>
+                                </select>
+                                {% if form and form.errors.get('category_id') %}
+                                <div class="text-danger mt-1">
+                                    <small>{{ form.errors.category_id }}</small>
+                                </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="subcategory_id" class="form-label">Подкатегория</label>
+                                <select class="form-select" id="subcategory_id" name="subcategory_id">
+                                    <option value="">Сначала выберите категорию</option>
+                                </select>
+                                <small class="form-text text-muted">
+                                    <i class="bi bi-clock"></i> SLA: <span id="sla_info" class="fw-bold text-primary">не
+                                        определено</span>
+                                </small>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="priority" class="form-label">Приоритет</label>
+                                <select class="form-select" id="priority" name="priority">
+                                    <option value="low" {% if form and form.priority=='low' %}selected{% endif %}>Низкий
+                                    </option>
+                                    <option value="medium" {% if not form or form.priority=='medium' %}selected{% endif
+                                        %}>Средний</option>
+                                    <option value="high" {% if form and form.priority=='high' %}selected{% endif %}>
+                                        Высокий</option>
+                                    <option value="critical" {% if form and form.priority=='critical' %}selected{% endif
+                                        %}>Критический</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="severity" class="form-label">Серьезность</label>
+                                <select class="form-select" id="severity" name="severity">
+                                    <option value="minor" {% if not form or form.severity=='minor' %}selected{% endif
+                                        %}>Незначительная</option>
+                                    <option value="major" {% if form and form.severity=='major' %}selected{% endif %}>
+                                        Значительная</option>
+                                    <option value="critical" {% if form and form.severity=='critical' %}selected{% endif
+                                        %}>Критическая</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        <div class="row">
+                            <!-- Локация -->
+                            <div class="col-md-12">
+                                <h5 class="card-title mb-3">
+                                    <i class="bi bi-geo-alt"></i> Местоположение
+                                </h5>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="store_id" class="form-label">Магазин <span
+                                        class="text-danger">*</span></label>
+                                <select class="form-select" id="store_id" name="store_id" required>
+                                    <option value="">Выберите магазин</option>
+                                    <optgroup label="🇫🇮 Финляндия"></optgroup>
+                                    <option value="1">HEL001 - Helsinki Keskusta (15000 м²)</option>
+                                    <option value="2">TAM001 - Tampere (8000 м²)</option>
+                                    <option value="3">TUR001 - Turku (6000 м²)</option>
+                                    <option value="4">ESP001 - Espoo (7500 м²)</option>
+                                    <option value="5">OUL001 - Oulu (5500 м²)</option>
+                                    </optgroup>
+                                    <optgroup label="🇪🇪 Эстония">
+                                        <option value="6">TAL001 - Tallinn (12000 м²)</option>
+                                        <option value="7">TAR001 - Tartu Outlet (2500 м²)</option>
+                                        <option value="8">PAR001 - Pärnu (3500 м²)</option>
+                                    </optgroup>
+                                    <optgroup label="🇱🇻 Латвия">
+                                        <option value="9">RIG001 - Riga (10000 м²)</option>
+                                        <option value="10">DAU001 - Daugavpils Outlet (3000 м²)</option>
+                                        <option value="11">LIE001 - Liepāja Outlet (2800 м²)</option>
+                                    </optgroup>
+                                </select>
+                                {% if form and form.errors.get('store_id') %}
+                                <div class="text-danger mt-1">
+                                    <small>{{ form.errors.store_id }}</small>
+                                </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="department_id" class="form-label">Отдел</label>
+                                <select class="form-select" id="department_id" name="department_id">
+                                    <option value="">Сначала выберите магазин</option>
+                                </select>
+                                <small class="form-text text-muted">
+                                    <i class="bi bi-building"></i> Отделы загружаются автоматически
+                                </small>
+                            </div>
+
+                            <div class="col-md-12 mb-3">
+                                <label for="location_details" class="form-label">Дополнительные детали
+                                    местоположения</label>
+                                <input type="text" class="form-control" id="location_details" name="location_details"
+                                    value="{{ form.location_details if form else '' }}"
+                                    placeholder="Например: касса №3, примерочная, склад">
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        <div class="row">
+                            <!-- Назначение и дополнительная информация -->
+                            <div class="col-md-12">
+                                <h5 class="card-title mb-3">
+                                    <i class="bi bi-person-check"></i> Назначение и дополнительная информация
+                                </h5>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="assigned_to" class="form-label">Назначить ответственного</label>
+                                <select class="form-select" id="assigned_to" name="assigned_to">
+                                    <option value="">Назначить позже</option>
+                                    {% for user in users %}
+                                    <option value="{{ user.id }}" {% if form and form.assigned_to==user.id|string
+                                        %}selected{% endif %}>
+                                        {{ user.full_name }} ({{ user.position or user.role }})
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="customer_affected" class="form-label">Влияние на клиентов</label>
+                                <select class="form-select" id="customer_affected" name="customer_affected">
+                                    <option value="false" {% if not form or form.customer_affected=='false' %}selected{%
+                                        endif %}>Клиенты не затронуты</option>
+                                    <option value="true" {% if form and form.customer_affected=='true' %}selected{%
+                                        endif %}>Клиенты затронуты</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="d-flex justify-content-between">
+                                    <a href="{{ url_for('incidents') }}" class="btn btn-secondary">
+                                        <i class="bi bi-x-circle"></i> Отмена
+                                    </a>
+                                    <button type="submit" class="btn btn-danger">
+                                        <i class="bi bi-check-circle"></i> Создать инцидент
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const categorySelect = document.getElementById('category_id');
+        const subcategorySelect = document.getElementById('subcategory_id');
+        const storeSelect = document.getElementById('store_id');
+        const departmentSelect = document.getElementById('department_id');
+        const slaInfo = document.getElementById('sla_info');
+
+        // Обработка изменения категории
+        categorySelect.addEventListener('change', function () {
+            const categoryId = this.value;
+            subcategorySelect.innerHTML = '<option value="">Загрузка...</option>';
+
+            if (categoryId) {
+                fetch(`/api/subcategories/${categoryId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        subcategorySelect.innerHTML = '<option value="">Выберите подкатегорию</option>';
+                        data.forEach(sub => {
+                            const option = document.createElement('option');
+                            option.value = sub.id;
+                            option.textContent = `${sub.name} (${sub.sla_hours}ч)`;
+                            option.dataset.sla = sub.sla_hours;
+                            subcategorySelect.appendChild(option);
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Ошибка загрузки подкатегорий:', error);
+                        subcategorySelect.innerHTML = '<option value="">Ошибка загрузки</option>';
+                    });
+            } else {
+                subcategorySelect.innerHTML = '<option value="">Сначала выберите категорию</option>';
+            }
+        });
+
+        // Обработка изменения подкатегории (показ SLA)
+        subcategorySelect.addEventListener('change', function () {
+            const selectedOption = this.options[this.selectedIndex];
+            if (selectedOption.value && selectedOption.dataset.sla) {
+                slaInfo.textContent = `${selectedOption.dataset.sla} часов`;
+                slaInfo.className = 'fw-bold text-success';
+            } else {
+                slaInfo.textContent = 'не определено';
+                slaInfo.className = 'fw-bold text-muted';
+            }
+        });
+
+        // Обработка изменения магазина
+        storeSelect.addEventListener('change', function () {
+            const storeId = this.value;
+            departmentSelect.innerHTML = '<option value="">Загрузка...</option>';
+
+            if (storeId) {
+                fetch(`/api/departments/${storeId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        departmentSelect.innerHTML = '<option value="">Выберите отдел</option>';
+                        data.forEach(dept => {
+                            const option = document.createElement('option');
+                            option.value = dept.id;
+
+                            // Добавляем иконки для разных типов отделов
+                            let icon = '🏬';
+                            if (dept.name.includes('одежда')) icon = '👕';
+                            else if (dept.name.includes('Красота')) icon = '💄';
+                            else if (dept.name.includes('Обувь')) icon = '👠';
+                            else if (dept.name.includes('Дом')) icon = '🏠';
+                            else if (dept.name.includes('Продукты')) icon = '🍽️';
+                            else if (dept.name.includes('Люкс')) icon = '💎';
+                            else if (dept.name.includes('Спорт')) icon = '⚽';
+                            else if (dept.name.includes('Кафе')) icon = '☕';
+
+                            const floorText = dept.floor_number ? ` (${dept.floor_number} этаж)` : '';
+                            option.textContent = `${icon} ${dept.name}${floorText}`;
+                            departmentSelect.appendChild(option);
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Ошибка загрузки отделов:', error);
+                        departmentSelect.innerHTML = '<option value="">Ошибка загрузки</option>';
+                    });
+            } else {
+                departmentSelect.innerHTML = '<option value="">Сначала выберите магазин</option>';
+            }
+        });
+
+        // Валидация формы с улучшенными сообщениями
+        document.getElementById('incidentForm').addEventListener('submit', function (e) {
+            const title = document.getElementById('title').value.trim();
+            const description = document.getElementById('description').value.trim();
+            const categoryId = document.getElementById('category_id').value;
+            const storeId = document.getElementById('store_id').value;
+
+            let errors = [];
+
+            if (!title || title.length < 5) {
+                errors.push('• Заголовок должен содержать минимум 5 символов');
+            }
+
+            if (!description || description.length < 10) {
+                errors.push('• Описание должно содержать минимум 10 символов');
+            }
+
+            if (!categoryId) {
+                errors.push('• Выберите категорию инцидента');
+            }
+
+            if (!storeId) {
+                errors.push('• Выберите магазин');
+            }
+
+            if (errors.length > 0) {
+                e.preventDefault();
+                alert('Пожалуйста, исправьте следующие ошибки:\n\n' + errors.join('\n'));
+                return;
+            }
+
+            // Показываем индикатор загрузки
+            const submitBtn = document.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Создание...';
+            submitBtn.disabled = true;
+        });
+    });
+</script>
+{% endblock %}

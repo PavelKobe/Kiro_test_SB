@@ -1,0 +1,370 @@
+openapi: 3.0.3
+info:
+  title: Flask Management System API
+  description: API для системы управления инцидентами и отчетностью
+  version: 1.0.0
+  contact:
+    name: API Support
+    email: support@example.com
+
+servers:
+  - url: http://localhost:5000/api/v1
+    description: Development server
+
+paths:
+  /incidents:
+    get:
+      operationId: get_incidents
+      summary: Получить список инцидентов
+      description: Возвращает список всех инцидентов с возможностью фильтрации
+      parameters:
+        - name: status
+          in: query
+          description: Фильтр по статусу
+          schema:
+            type: string
+            enum: [active, closed, in_progress]
+        - name: limit
+          in: query
+          description: Количество записей
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        '200':
+          description: Список инцидентов
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  incidents:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Incident'
+                  total:
+                    type: integer
+    post:
+      operationId: create_incident
+      summary: Создать новый инцидент
+      description: Создает новый инцидент в системе
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IncidentCreate'
+      responses:
+        '201':
+          description: Инцидент создан
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Incident'
+        '400':
+          description: Ошибка валидации
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /incidents/{incident_id}:
+    get:
+      operationId: get_incident
+      summary: Получить инцидент по ID
+      parameters:
+        - name: incident_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Данные инцидента
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Incident'
+        '404':
+          description: Инцидент не найден
+    put:
+      operationId: update_incident
+      summary: Обновить инцидент
+      parameters:
+        - name: incident_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IncidentUpdate'
+      responses:
+        '200':
+          description: Инцидент обновлен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Incident'
+    delete:
+      operationId: delete_incident
+      summary: Удалить инцидент
+      parameters:
+        - name: incident_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Инцидент удален
+
+  /acts:
+    get:
+      operationId: get_acts
+      summary: Получить список актов СР
+      responses:
+        '200':
+          description: Список актов
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Act'
+    post:
+      operationId: create_act
+      summary: Создать новый акт СР
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ActCreate'
+      responses:
+        '201':
+          description: Акт создан
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Act'
+
+  /reports/kpi:
+    get:
+      operationId: get_kpi_report
+      summary: Получить KPI отчет
+      parameters:
+        - name: period
+          in: query
+          description: Период отчета
+          schema:
+            type: string
+            enum: [day, week, month, year]
+            default: week
+      responses:
+        '200':
+          description: KPI данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/KPIReport'
+
+components:
+  schemas:
+    Incident:
+      type: object
+      required:
+        - id
+        - title
+        - status
+        - created_at
+      properties:
+        id:
+          type: integer
+          description: Уникальный идентификатор
+        title:
+          type: string
+          maxLength: 200
+          description: Заголовок инцидента
+        description:
+          type: string
+          description: Описание инцидента
+        status:
+          type: string
+          enum: [active, closed, in_progress]
+          description: Статус инцидента
+        priority:
+          type: string
+          enum: [low, medium, high, critical]
+          default: medium
+          description: Приоритет
+        assigned_to:
+          type: string
+          maxLength: 100
+          description: Ответственный
+        created_at:
+          type: string
+          format: date-time
+          description: Дата создания
+        updated_at:
+          type: string
+          format: date-time
+          description: Дата обновления
+        resolved_at:
+          type: string
+          format: date-time
+          nullable: true
+          description: Дата решения
+
+    IncidentCreate:
+      type: object
+      required:
+        - title
+        - description
+      properties:
+        title:
+          type: string
+          maxLength: 200
+        description:
+          type: string
+        priority:
+          type: string
+          enum: [low, medium, high, critical]
+          default: medium
+        assigned_to:
+          type: string
+          maxLength: 100
+
+    IncidentUpdate:
+      type: object
+      properties:
+        title:
+          type: string
+          maxLength: 200
+        description:
+          type: string
+        status:
+          type: string
+          enum: [active, closed, in_progress]
+        priority:
+          type: string
+          enum: [low, medium, high, critical]
+        assigned_to:
+          type: string
+          maxLength: 100
+
+    Act:
+      type: object
+      required:
+        - id
+        - number
+        - title
+        - status
+      properties:
+        id:
+          type: integer
+        number:
+          type: string
+          maxLength: 50
+          description: Номер акта
+        title:
+          type: string
+          maxLength: 200
+          description: Название работ
+        description:
+          type: string
+          description: Описание выполненных работ
+        status:
+          type: string
+          enum: [draft, in_progress, completed, signed]
+        executor:
+          type: string
+          maxLength: 100
+          description: Исполнитель
+        created_at:
+          type: string
+          format: date-time
+        completed_at:
+          type: string
+          format: date-time
+          nullable: true
+
+    ActCreate:
+      type: object
+      required:
+        - number
+        - title
+      properties:
+        number:
+          type: string
+          maxLength: 50
+        title:
+          type: string
+          maxLength: 200
+        description:
+          type: string
+        executor:
+          type: string
+          maxLength: 100
+
+    KPIReport:
+      type: object
+      properties:
+        period:
+          type: string
+        target_value:
+          type: number
+          format: float
+          description: Целевое значение
+        actual_value:
+          type: number
+          format: float
+          description: Фактическое значение
+        deviation:
+          type: number
+          format: float
+          description: Отклонение
+        trend:
+          type: string
+          enum: [up, down, stable]
+        metrics:
+          type: object
+          properties:
+            incidents_resolved:
+              type: integer
+            average_resolution_time:
+              type: number
+              format: float
+            sla_compliance:
+              type: number
+              format: float
+
+    Error:
+      type: object
+      required:
+        - error
+        - message
+      properties:
+        error:
+          type: string
+          description: Код ошибки
+        message:
+          type: string
+          description: Описание ошибки
+        details:
+          type: object
+          description: Дополнительные детали ошибки
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+security:
+  - bearerAuth: []

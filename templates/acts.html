@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}Акты СР - Система управления{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-file-text-fill text-primary"></i> Акты выполненных работ</h2>
+        <button class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Новый акт
+        </button>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h4 class="text-warning">8</h4>
+                    <p class="mb-0">В работе</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h4 class="text-success">23</h4>
+                    <p class="mb-0">Готовые</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h4 class="text-info">31</h4>
+                    <p class="mb-0">Всего</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">Список актов СР</h5>
+        </div>
+        <div class="card-body">
+            <p class="text-muted">Здесь будет отображаться список актов выполненных работ.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

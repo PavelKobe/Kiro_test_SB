@@ -1,0 +1,37 @@
+{
+  "mcpServers": {
+    "postgresql-server": {
+      "command": "python",
+      "args": ["app/mcp/pg_server.py"],
+      "env": {
+        "DB_NAME": "flask_app",
+        "DB_USER": "postgres",
+        "DB_PASSWORD": "password",
+        "DB_HOST": "localhost",
+        "DB_PORT": "5432",
+        "FASTMCP_LOG_LEVEL": "INFO"
+      },
+      "disabled": false,
+      "autoApprove": ["pg_query", "get_schema", "list_tables"]
+    },
+    "flask-docs": {
+      "command": "uvx",
+      "args": ["mcp-server-docs@latest", "--source", "flask", "--source", "sqlalchemy"],
+      "env": {
+        "FASTMCP_LOG_LEVEL": "ERROR"
+      },
+      "disabled": false,
+      "autoApprove": ["search_docs", "get_documentation"]
+    },
+    "openapi-codegen": {
+      "command": "python",
+      "args": ["app/mcp/openapi_server.py"],
+      "env": {
+        "OPENAPI_SPEC_PATH": "api/openapi.yaml",
+        "FASTMCP_LOG_LEVEL": "INFO"
+      },
+      "disabled": false,
+      "autoApprove": ["generate_model", "generate_route", "validate_spec"]
+    }
+  }
+}

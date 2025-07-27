@@ -1,0 +1,166 @@
+/* Основные стили приложения */
+body {
+    background-color: #f8f9fa;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.navbar-brand {
+    font-weight: bold;
+    font-size: 1.5rem;
+}
+
+.card {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    border: 1px solid rgba(0, 0, 0, 0.125);
+    transition: all 0.3s ease;
+}
+
+.card-hover:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.card-icon {
+    margin-bottom: 1rem;
+}
+
+.btn-primary {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+.btn-primary:hover {
+    background-color: #0b5ed7;
+    border-color: #0a58ca;
+}
+
+.alert {
+    border-radius: 0.375rem;
+    border: none;
+}
+
+.form-control:focus {
+    border-color: #86b7fe;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+/* Стили для страницы входа */
+.min-vh-100 {
+    min-height: 100vh;
+}
+
+.bg-light {
+    background-color: #f8f9fa !important;
+}
+
+/* Стили для навигации */
+.navbar {
+    box-shadow: 0 2px 4px rgba(0,0,0,.1);
+}
+
+.navbar-nav .nav-link {
+    padding: 0.5rem 1rem;
+    border-radius: 0.375rem;
+    margin: 0 0.25rem;
+    transition: all 0.3s ease;
+}
+
+.navbar-nav .nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Стили для карточек на главной странице */
+.card h4 {
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.card-title {
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+}
+
+.card-text {
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+/* Стили для статистики */
+.border-end {
+    border-right: 1px solid #dee2e6 !important;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .border-end {
+        border-right: none !important;
+        border-bottom: 1px solid #dee2e6 !important;
+        margin-bottom: 1rem;
+        padding-bottom: 1rem;
+    }
+    
+    .card-hover:hover {
+        transform: none;
+    }
+}
+
+/* Анимации */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.card {
+    animation: fadeIn 0.5s ease-out;
+}
+
+/* Дополнительные утилиты */
+.text-decoration-none:hover {
+    text-decoration: none !important;
+}
+
+.shadow-sm {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
+}
+
+/* Стили для формы создания инцидента */
+.form-select optgroup {
+    font-weight: bold;
+    color: #495057;
+    background-color: #f8f9fa;
+}
+
+.form-select option {
+    padding: 0.5rem;
+}
+
+.char-counter {
+    display: block;
+    text-align: right;
+    margin-top: 0.25rem;
+}
+
+/* Анимация для SLA информации */
+#sla_info {
+    transition: all 0.3s ease;
+}
+
+/* Улучшенные стили для select */
+.form-select:focus {
+    border-color: #86b7fe;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+/* Стили для загрузки */
+.form-select option[value=""]:first-child {
+    color: #6c757d;
+    font-style: italic;
+}
+
+footer {
+    margin-top: 50px;
+    padding: 20px 0;
+    background-color: #343a40;
+    color: white;
+    text-align: center;
+}
